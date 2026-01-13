@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Movies.Application.Database;
 using Movies.Application.Repositories;
+using Movies.Application.Services;
 
 namespace Movies.Application
 {
@@ -14,7 +13,34 @@ namespace Movies.Application
         {
             services.AddSingleton<IMovieRepository, MovieRepository>();
 
+            services.AddScoped<IActorService, ActorService>();
+
+            services.AddScoped<IActorRepository, ActorRepository>();
+
             return services;
         }
+
+
+        public static IServiceCollection AddDatabase(this IServiceCollection services, string? connectionString = null)
+        {
+            // Factory as singleton (string-only config)
+            services.AddSingleton<IDbConnectionFactory, MssqlConnectionFactory>();
+
+
+            // If connectionString is null, EF will read from IConfiguration inside Program.cs
+            services.AddDbContext<MovieDbContext>((sp, options) =>
+            {
+                var cfg = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                var cs = connectionString ?? cfg.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                options.UseSqlServer(cs);
+            });
+
+            return services;    
+
+        }
+
     }
+
+
 }

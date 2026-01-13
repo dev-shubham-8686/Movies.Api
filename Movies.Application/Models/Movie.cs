@@ -12,7 +12,7 @@ namespace Movies.Application.Models
 
         public string? Title { get; set; }
 
-        public int? YearOfRelese { get; set; }
+        public int? YearOfRelease { get; set; }
 
         public List<string> Genres { get; set; } = new();
     }

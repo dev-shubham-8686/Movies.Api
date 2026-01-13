@@ -17,6 +17,7 @@ namespace Movies.Api
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddApplication();
+            builder.Services.AddDatabase();
 
             var app = builder.Build();
 
