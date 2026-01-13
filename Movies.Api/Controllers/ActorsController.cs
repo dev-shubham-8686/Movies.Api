@@ -52,10 +52,10 @@ namespace Movies.Api.Controllers
         [HttpPut(ApiEndpoints.Actors.Update)]
         [ProducesResponseType(typeof(ActorResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update([FromQuery] Guid Id, [FromBody] UpdateActorRequest request, CancellationToken token)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateActorRequest request, CancellationToken token)
         {
 
-            var actor = request.MapToRequest(Id);
+            var actor = request.MapToRequest(id);
 
             var update = await _actorService.UpdateAsync(actor, token);
 
@@ -72,7 +72,7 @@ namespace Movies.Api.Controllers
         [HttpDelete(ApiEndpoints.Actors.Delete)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete([FromQuery] Guid id, CancellationToken token)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
         {
             var result = await _actorService.DeleteByIdAsync(id, token);
 
@@ -87,7 +87,7 @@ namespace Movies.Api.Controllers
         [HttpGet(ApiEndpoints.Actors.Get)]
         [ProducesResponseType(typeof(ActorResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get([FromQuery] Guid id, CancellationToken token)
+        public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken token)
         {
             var result = await _actorService.GetByIdAsync(id, token);
 

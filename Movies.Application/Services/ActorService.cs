@@ -1,5 +1,7 @@
-﻿using Movies.Application.Models;
+﻿using FluentValidation;
+using Movies.Application.Models;
 using Movies.Application.Repositories;
+using Movies.Application.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,34 +13,38 @@ namespace Movies.Application.Services
     public class ActorService : IActorService
     {
         private readonly IActorRepository _actorRepository;
-        public ActorService(IActorRepository actorRepository) {
+        private readonly IValidator<Actor> _actorValidator;
+
+        public ActorService(IActorRepository actorRepository, IValidator<Actor> actorValidator) {
 
             _actorRepository = actorRepository;
+            _actorValidator = actorValidator;
         }
 
-        public Task<bool> CreateAsync(Actor actor, CancellationToken token = default)
+        public async Task<bool> CreateAsync(Actor actor, CancellationToken token = default)
         {
-            return _actorRepository.CreateAsync(actor, token);
+            await _actorValidator.ValidateAndThrowAsync(actor, cancellationToken: token);
+            return await _actorRepository.CreateAsync(actor, token);
         }
 
-        public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
+        public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
-            return _actorRepository.DeleteByIdAsync(id, token);
+            return await _actorRepository.DeleteByIdAsync(id, token);
         }
 
-        public Task<IEnumerable<Actor>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Actor>> GetAllAsync(CancellationToken token = default)
         {
-            return _actorRepository.GetAllAsync(token);
+            return await _actorRepository.GetAllAsync(token);
         }
 
-        public Task<Actor?> GetByIdAsync(Guid id, CancellationToken token = default)
+        public async Task<Actor?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
-            return _actorRepository.GetByIdAsync(id, token);
+            return await _actorRepository.GetByIdAsync(id, token);
         }
 
-        public Task<Actor?> UpdateAsync(Actor actor, CancellationToken token = default)
+        public async Task<Actor?> UpdateAsync(Actor actor, CancellationToken token = default)
         {
-            return _actorRepository.UpdateAsync(actor, token);
+            return await _actorRepository.UpdateAsync(actor, token);
         }
     }
 }

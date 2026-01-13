@@ -1,4 +1,5 @@
 
+using Movies.Api.Mapping;
 using Movies.Application;
 
 namespace Movies.Api
@@ -32,6 +33,7 @@ namespace Movies.Api
 
             app.UseAuthorization();
 
+            app.UseMiddleware<ValidationMappingMiddleware>();
 
             app.MapControllers();
 

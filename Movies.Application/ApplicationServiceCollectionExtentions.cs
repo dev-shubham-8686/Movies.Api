@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Database;
@@ -16,6 +17,8 @@ namespace Movies.Application
             services.AddScoped<IActorService, ActorService>();
 
             services.AddScoped<IActorRepository, ActorRepository>();
+
+            services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Scoped);
 
             return services;
         }
