@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Application.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Movies.Application.Results;
 
 namespace Movies.Application.Database
 {
@@ -17,5 +13,47 @@ namespace Movies.Application.Database
 
         public DbSet<Actor> Actors { get; set; }
 
+        public DbSet<Movie> Movies { get; set; }
+
+        public DbSet<MovieActor> MovieActors { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<GetActorMoviesResult>(eb =>
+            {
+                eb.HasNoKey();                 // keyless query type
+                eb.ToView(null);               // not mapped to a real view
+            });
+        }
+
+        public async Task<IEnumerable<GetActorMoviesResult>> GetActorMoviesQueryAsync(
+            Guid actorId,
+            CancellationToken token = default)
+        {
+            var sql = @"
+                         SELECT 
+                             m.Id          AS Id,
+                             m.Title       AS Title,
+                             m.YearOfRelease AS YearOfRelease
+                         FROM MovieActor AS ma
+                         INNER JOIN Movie AS m ON m.Id = ma.MovieId
+                         WHERE ma.ActorId = {0};";
+
+            var result = await Set<GetActorMoviesResult>()
+                .FromSqlRaw(sql, actorId)      // parameterized with placeholder {0}
+                .AsNoTracking()
+                .ToListAsync(token);
+
+            return result;
+        }
+
+
+
+
     }
+
+
 }

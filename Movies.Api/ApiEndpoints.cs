@@ -13,6 +13,9 @@ public static class ApiEndpoints
         public const string GetAll = Base;
         public const string Update = $"{Base}/{{id:guid}}";
         public const string Delete = $"{Base}/{{id:guid}}";
+        public const string GetActors = $"{Base}/{{id:guid}}/actors";
+        public const string AddActor = $"{Base}/{{id:guid}}/actors";
+        public const string RemoveActor = $"{Base}/{{id:guid}}/actors/{{actorId:guid}}";
     }
 
 
@@ -25,5 +28,8 @@ public static class ApiEndpoints
         public const string GetAll = Base;
         public const string Update = $"{Base}/{{id:guid}}";
         public const string Delete = $"{Base}/{{id:guid}}";
+        public const string GetMovies = $"{Base}/{{id:guid}}/movies";
+        public const string AddMovie = $"{Base}/{{id:guid}}/movies";
+        public const string RemoveMovie = $"{Base}/{{id:guid}}/movies/{{movieId:guid}}";
     }
 }

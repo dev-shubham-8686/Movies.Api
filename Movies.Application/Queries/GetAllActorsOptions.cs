@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Application.Models
+namespace Movies.Application.Queries
 {
     public class GetAllActorsOptions
     {

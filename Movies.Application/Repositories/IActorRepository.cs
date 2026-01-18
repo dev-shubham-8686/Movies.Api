@@ -1,4 +1,5 @@
 ﻿using Movies.Application.Models;
+using Movies.Application.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,11 @@ namespace Movies.Application.Repositories
         Task<Actor?> UpdateAsync(Actor actor, CancellationToken token = default);
 
         Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
+
+        Task<IEnumerable<GetActorMoviesResult>> GetMoviesAsync(Guid id, CancellationToken token = default);
+
+        Task<AddActorMovieResult?> AddMovieAsync(Guid id, Guid movieId, CancellationToken token = default);
+
+        Task<Movie?> RemoveMovieAsync(Guid id, Guid movieId, CancellationToken token = default);
     }
 }

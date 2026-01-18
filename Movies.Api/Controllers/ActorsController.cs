@@ -97,6 +97,53 @@ namespace Movies.Api.Controllers
             }
 
             return Ok(result.MapToResponse());
-        }    
+        }
+
+        [HttpGet(ApiEndpoints.Actors.GetMovies)]
+        [ProducesResponseType(typeof(GetActorMoviesResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMovies([FromRoute] Guid id, CancellationToken token) {
+
+
+            var getMovies = await _actorService.GetMoviesAsync(id, token);
+
+            var result = getMovies.MapToResponse();
+
+            return Ok(getMovies);
+        
+        }
+
+        [HttpPost(ApiEndpoints.Actors.AddMovie)]
+        [ProducesResponseType(typeof(AddActorMovieResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddMovie([FromRoute] Guid id, [FromBody] AddActorMovieRequest request, CancellationToken token) {
+
+            var addMovie = await _actorService.AddMovieAsync(id, request.Id, token);
+
+            if (addMovie is null)
+            {
+                return NotFound(); 
+            }
+
+            var result = addMovie.MapToResponse();
+
+            return Ok(result);
+        
+        }
+
+        [HttpDelete(ApiEndpoints.Actors.RemoveMovie)]
+        [ProducesResponseType(typeof(RemoveActorMovieResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveMovie([FromRoute] Guid id, [FromRoute] Guid movieId, CancellationToken token)
+        {
+
+            var removeMovie = await _actorService.RemoveMovieAsync(id, movieId, token);
+
+            if (removeMovie is null) { return NotFound(); }
+
+            var result = removeMovie.MapToResponse();
+
+            return Ok(result);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Movies.Application.Models;
+using Movies.Application.Results;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
 
@@ -101,7 +102,36 @@ public static class ContractMapping
         };
     }
 
-   
+
+    public static GetActorMoviesResponse MapToResponse(this IEnumerable<GetActorMoviesResult> response)
+    {
+        return new GetActorMoviesResponse
+        {
+            Items = response.Select(c => new GetActorMovieResponse
+            { 
+              Id = c.Id,
+              Title = c.Title,
+              YearOfRelease = c.YearOfRelease
+            })
+        };
+    }
+
+    public static AddActorMovieResponse MapToResponse(this AddActorMovieResult response)
+    {
+        return new AddActorMovieResponse
+        {
+            Id= response.Id,
+            Name= response.Name,
+            LastName = response.LastName,
+            Movies = response.Movies.Select(c => new Contracts.Responses.AddActorMovieItem
+            {
+                Id = c.Id,
+                Title = c.Title,
+            }),
+
+        };
+    }
+
 
     #endregion
 

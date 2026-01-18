@@ -8,17 +8,13 @@ using System.Threading.Tasks;
 
 namespace Movies.Application.Models
 {
-    [Table("Movie")]
-    public class Movie
+    [Table("MovieActor")]
+    public class MovieActor
     {
         [Key]
-        public Guid Id { get; set; }
+        public string? MovieId { get; set; }
 
-        public string? Title { get; set; }
-
-        public int? YearOfRelease { get; set; }
-
-        [NotMapped]
-        public List<string> Genres { get; set; } = new();
+        
+        public string? Actorid { get; set; }
     }
 }

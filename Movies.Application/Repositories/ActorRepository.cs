@@ -1,11 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Movies.Application.Database;
 using Movies.Application.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Movies.Application.Results;
 
 namespace Movies.Application.Repositories
 {
@@ -17,6 +13,39 @@ namespace Movies.Application.Repositories
             _movieDbContext = movieDbContext;
 
         }
+
+        public async Task<AddActorMovieResult?> AddMovieAsync(Guid id, Guid movieId, CancellationToken token = default)
+        {
+           var getActor = await _movieDbContext.Actors.FindAsync(id, token);
+
+            if(getActor != null)
+            {
+                var getMovie = await _movieDbContext.Movies.FindAsync(movieId, token);
+
+                if(getMovie != null)
+                {
+                   await _movieDbContext.AddAsync(new MovieActor { Actorid = id.ToString(), MovieId = movieId.ToString() }, token);
+
+                   var result = await _movieDbContext.SaveChangesAsync(token);
+
+                   var movies = await _movieDbContext.GetActorMoviesQueryAsync(id, token);
+
+                    var data = new AddActorMovieResult
+                    {
+                        Id = id,
+                        Name = getActor.Name,
+                        LastName = getActor.LastName,
+                        Movies = movies.Select(x => new AddActorMovieItem { Id = x.Id, Title = x.Title })
+                    };
+
+                    return data;
+
+                }
+            }
+
+            return null;
+        }
+
         public async Task<bool> CreateAsync(Actor actor, CancellationToken token = default)
         {
             await _movieDbContext.AddAsync(actor, token);
@@ -55,6 +84,31 @@ namespace Movies.Application.Repositories
 
                 return getActor;
             
+            }
+
+            return null;
+
+        }
+
+        public async Task<IEnumerable<GetActorMoviesResult>> GetMoviesAsync(Guid id, CancellationToken token = default)
+        {
+           return await _movieDbContext.GetActorMoviesQueryAsync(id, token);
+        }
+
+        public async Task<Movie?> RemoveMovieAsync(Guid id, Guid movieId, CancellationToken token = default)
+        {
+            string strId = id.ToString(); 
+            string strMovieId = movieId.ToString();
+            var getActorMovie = await _movieDbContext.MovieActors.Where(c => c.Actorid == strId && c.MovieId == strMovieId).FirstOrDefaultAsync();
+
+            if (getActorMovie != null) {
+
+               _movieDbContext.Remove(getActorMovie);
+               await _movieDbContext.SaveChangesAsync(token);
+            
+               var getMovie = await _movieDbContext.Movies.FindAsync(movieId, token);
+
+                return getMovie ?? null;
             }
 
             return null;
