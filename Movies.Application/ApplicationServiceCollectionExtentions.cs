@@ -12,7 +12,6 @@ namespace Movies.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            //services.AddSingleton<IMovieRepository, MovieRepository>();
 
             services.AddScoped<IMovieService, MovieService>();
 
@@ -37,9 +36,10 @@ namespace Movies.Application
             // If connectionString is null, EF will read from IConfiguration inside Program.cs
             services.AddDbContext<MovieDbContext>((sp, options) =>
             {
+              
                 var cfg = sp.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
-                var cs = connectionString ?? cfg.GetConnectionString("DefaultConnection")
-                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                var cs = connectionString ?? cfg["Database:ConnectionString"]
+                    ?? throw new InvalidOperationException("Database:ConnectionString not found.");
                 options.UseSqlServer(cs);
             });
 

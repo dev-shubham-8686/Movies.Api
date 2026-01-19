@@ -1,6 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Movies.Api.Mapping;
 using Movies.Application;
+using System.Text;
 
 namespace Movies.Api
 {
@@ -10,15 +13,36 @@ namespace Movies.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var config = builder.Configuration;
 
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = config["Jwt:Issuer"],
+                    ValidAudience = config["Jwt:Audience"],
+                    ValidateIssuer = true,
+                    ValidateAudience = true
+                };
+            });
+
+            // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddApplication();
-            builder.Services.AddDatabase();
+            builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 
             var app = builder.Build();
 
@@ -29,7 +53,9 @@ namespace Movies.Api
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseAuthorization();
 
