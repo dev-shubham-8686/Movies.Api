@@ -1,35 +1,44 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Repositories;
+using Movies.Application.Services;
 using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
 public class MoviesController : ControllerBase
 {
-    private readonly IMovieRepository _movieRepository;
+    private readonly IMovieService _movieService;
 
-    public MoviesController(IMovieRepository movieRepository)
+    public MoviesController(IMovieService movieService)
     {
-        _movieRepository = movieRepository;
+        _movieService = movieService;
     }
 
     [HttpPost(ApiEndpoints.Movies.Create)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromBody] CreateMovieRequest request)
     {
         var movie = request.MapToMovie();
-        await _movieRepository.CreateAsync(movie);
+
+        await _movieService.CreateAsync(movie);
+
         var movieResponse = movie.MapToResponse();
 
         return CreatedAtAction(nameof(Get), new { id = movie.Id }, movieResponse);
+
         //return Ok(movieResponse);
     }
 
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        var movie = await _movieRepository.GetByIdAsync(id);
+        var movie = await _movieService.GetByIdAsync(id);
         if (movie is null)
         {
             return NotFound();
@@ -40,20 +49,24 @@ public class MoviesController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        var movies = await _movieRepository.GetAllAsync();
+        var movies = await _movieService.GetAllAsync();
 
         var moviesResponse = movies.MapToResponse();
+
         return Ok(moviesResponse);
     }
 
     [HttpPut(ApiEndpoints.Movies.Update)]
+    [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid id,
         [FromBody] UpdateMovieRequest request)
     {
         var movie = request.MapToMovie(id);
-        var updated = await _movieRepository.UpdateAsync(movie);
+        var updated = await _movieService.UpdateAsync(movie);
         if (!updated)
         {
             return NotFound();
@@ -64,9 +77,11 @@ public class MoviesController : ControllerBase
     }
 
     [HttpDelete(ApiEndpoints.Movies.Delete)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var deleted = await _movieRepository.DeleteByIdAsync(id);
+        var deleted = await _movieService.DeleteByIdAsync(id);
         if (!deleted)
         {
             return NotFound();

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Movies.Application.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Movies.Application.Models;
 
-namespace Movies.Application.Repositories
+namespace Movies.Application.Services
 {
-    public interface IMovieRepository
+    public interface IMovieService
     {
         Task<bool> CreateAsync(Movie movie, CancellationToken token = default);
 
@@ -18,6 +18,5 @@ namespace Movies.Application.Repositories
         Task<bool> UpdateAsync(Movie movie, CancellationToken token = default);
 
         Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
-
     }
 }
