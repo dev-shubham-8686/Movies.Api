@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Models;
@@ -9,6 +10,7 @@ using Movies.Contracts.Responses;
 namespace Movies.Api.Controllers
 {
     [ApiController]
+    [ApiVersion("1.0")]
     public class ActorsController : ControllerBase
     {
         private readonly IActorService _actorService;

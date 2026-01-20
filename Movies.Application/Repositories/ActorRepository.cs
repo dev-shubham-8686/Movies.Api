@@ -8,10 +8,13 @@ namespace Movies.Application.Repositories
     public class ActorRepository : IActorRepository
     {
         private readonly MovieDbContext _movieDbContext;
-        public ActorRepository(MovieDbContext movieDbContext) {
+
+        private readonly IMovieRepository _movieRepository;
+        public ActorRepository(MovieDbContext movieDbContext, IMovieRepository movieRepository)
+        {
 
             _movieDbContext = movieDbContext;
-
+            _movieRepository = movieRepository;
         }
 
         public async Task<AddActorMovieResult?> AddMovieAsync(Guid id, Guid movieId, CancellationToken token = default)
@@ -20,7 +23,7 @@ namespace Movies.Application.Repositories
 
             if(getActor != null)
             {
-                var getMovie = await _movieDbContext.Movies.FindAsync(movieId, token);
+                var getMovie = await _movieRepository.GetByIdAsync(id, token);
 
                 if(getMovie != null)
                 {

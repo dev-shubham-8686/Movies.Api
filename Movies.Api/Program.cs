@@ -1,6 +1,9 @@
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Movies.Api.Mapping;
 using Movies.Application;
 using System.Text;
@@ -33,6 +36,52 @@ namespace Movies.Api
                     ValidateIssuer = true,
                     ValidateAudience = true
                 };
+            });
+
+            builder.Services.AddAuthorization(x =>
+            {
+                x.AddPolicy(AuthConstants.AdminUserPolicyName,
+                    p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+
+                x.AddPolicy(AuthConstants.TrustedMemberPolicyName,
+                    p => p.RequireAssertion(c =>
+                        c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true" }) ||
+                        c.User.HasClaim(m => m is { Type: AuthConstants.TrustedMemberClaimName, Value: "true" })));
+            });
+
+            builder.Services.AddApiVersioning(x =>
+            {
+                x.DefaultApiVersion = new ApiVersion(1.0);
+                x.AssumeDefaultVersionWhenUnspecified = true;
+                x.ReportApiVersions = true;
+                x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
+
+            }).AddMvc();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
 
             // Add services to the container.
