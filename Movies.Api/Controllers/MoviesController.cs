@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
-using Movies.Application.Repositories;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
@@ -10,6 +10,7 @@ namespace Movies.Api.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
+[Authorize]
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
@@ -88,6 +89,40 @@ public class MoviesController : ControllerBase
         {
             return NotFound();
         }
+
+        return Ok();
+    }
+
+    [HttpGet(ApiEndpoints.Movies.GetRatings)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRatings([FromRoute] Guid id)
+    {
+        return Ok();
+    }
+
+    [HttpPost(ApiEndpoints.Movies.AddRating)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddRating([FromRoute] Guid id)
+    {
+        var userId = HttpContext.GetUserId();
+
+        return Ok();
+    }
+
+    [HttpDelete(ApiEndpoints.Movies.DeleteRating)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteRating([FromRoute] Guid id)
+    {
+        return Ok();
+    }
+
+    [HttpGet(ApiEndpoints.Ratings.GetUserRatings)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserRatings([FromRoute] Guid id)
+    {
+        var userId = HttpContext.GetUserId();
 
         return Ok();
     }

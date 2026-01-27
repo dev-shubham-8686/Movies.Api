@@ -17,6 +17,8 @@ namespace Movies.Application.Database
 
         public DbSet<MovieActor> MovieActors { get; set; }
 
+        public DbSet<MovieRating> MovieRatings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
