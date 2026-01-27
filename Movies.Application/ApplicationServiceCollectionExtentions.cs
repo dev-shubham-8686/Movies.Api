@@ -21,6 +21,8 @@ namespace Movies.Application
 
             services.AddScoped<IActorRepository, ActorRepository>();
 
+            services.AddScoped<IRatingRepository, RatingRepository>();
+
             services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Scoped);
 
             return services;

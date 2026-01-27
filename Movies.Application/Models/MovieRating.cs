@@ -12,9 +12,9 @@ namespace Movies.Application.Models
     public class MovieRating
     {
         [Key]
-        public string MovieId { get; set; }
+        public Guid MovieId { get; set; }
 
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public int? Rating { get; set; }
     }

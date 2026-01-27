@@ -1,5 +1,6 @@
 ﻿using Movies.Application.Models;
 using Movies.Application.Repositories;
+using Movies.Application.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,21 @@ namespace Movies.Application.Services
     {
 
         private readonly IMovieRepository _movieRepository;
-        public MovieService(IMovieRepository movieRepository) {
+
+        private readonly IRatingRepository _ratingRepository;
+
+        public MovieService(IMovieRepository movieRepository, IRatingRepository ratingRepository)
+        {
 
             _movieRepository = movieRepository;
+            _ratingRepository = ratingRepository;
         }
+
+        public Task<AddMovieRatingResult> AddRatingAsync(Guid id, Guid userId, int? rating, CancellationToken token = default)
+        {
+            return _movieRepository.AddRatingAsync(id, userId, rating, token);
+        }
+
         public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
         {
             return await _movieRepository.CreateAsync(movie, token);
@@ -26,6 +38,11 @@ namespace Movies.Application.Services
             return await _movieRepository.DeleteByIdAsync(id, token);
         }
 
+        public async Task DeleteRatingAsync(Guid id, Guid userId, CancellationToken token = default)
+        {
+           await _movieRepository.DeleteRatingAsync(id, userId, token);
+        }
+
         public async Task<IEnumerable<Movie>> GetAllAsync(CancellationToken token = default)
         {
             return await _movieRepository.GetAllAsync(token);
@@ -34,6 +51,16 @@ namespace Movies.Application.Services
         public async Task<Movie?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             return await _movieRepository.GetByIdAsync(id, token);
+        }
+
+        public async Task<GetMovieRatingsResult> GetRatingsAsync(Guid id, CancellationToken token = default)
+        {
+            return await _movieRepository.GetRatingsAsync(id, token);
+        }
+
+        public async Task<GetUserRatingsResult> GetUserRatingsAsync(Guid userId, CancellationToken token = default)
+        {
+            return await _ratingRepository.GetUserRatingsAsync(userId, token);
         }
 
         public async Task<bool> UpdateAsync(Movie movie, CancellationToken token = default)

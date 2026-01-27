@@ -50,6 +50,43 @@ public static class ContractMapping
         };
     }
 
+    public static GetMovieRatingsResponse MapToResponse(this GetMovieRatingsResult result)
+    {
+        return new GetMovieRatingsResponse
+        {
+            Id = result.Id,
+            Title = result.Title,
+            Ratings = result.Ratings.Select(c => new GetMovieRatingsItem
+            {
+                UserId = c.UserId,
+                Rating = c.Rating
+            })
+        };
+    }
+
+    public static AddMovieRatingResponse MapToResponse(this AddMovieRatingResult result)
+    {
+       return new AddMovieRatingResponse
+       {
+           UserId = result.UserId,
+           Rating = result.Rating,
+           MovieId = result.MovieId
+       };
+    }
+
+    public static GetUserRatingsResponse MapToResponse(this GetUserRatingsResult result)
+    {
+        return new GetUserRatingsResponse
+        {
+            UserId = result.UserId,
+            Ratings = result.Ratings.Select(c => new GetUserRatingsItem
+            {
+                MovieId = c.MovieId,
+                Rating = c.Rating
+            })
+        };
+    }
+
     #endregion Movie
 
     #region Actor
