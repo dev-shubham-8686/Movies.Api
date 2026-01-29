@@ -20,6 +20,7 @@ public class MoviesController : ControllerBase
         _movieService = movieService;
     }
 
+    //[Authorize(AuthConstants.AdminUserPolicyName)]
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
