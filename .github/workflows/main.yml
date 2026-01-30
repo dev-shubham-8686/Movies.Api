@@ -2,7 +2,7 @@ name: One Click Deploy (Local)
 
 on:
   push:
-    branches: [ "main" ]   # 👈 THIS is the trigger
+    branches: [ "master" ]   # 👈 THIS is the trigger
 
 jobs:
   deploy:
