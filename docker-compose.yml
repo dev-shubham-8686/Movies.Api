@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  movies.api:
+    build:
+      context: .
+      dockerfile: Movies.Api/Dockerfile
+    image: movies.api:latest
+    ports:
+      - "6001:80"                # map host 8080 -> container 80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Database__ConnectionString=Server=movies_db;Database=MovieDb;User Id=sa;Password=Your_strong!Passw0rd;TrustServerCertificate=True;
+      - Jwt__Key=ForTheLoveOfGodStoreAndLoadThisSecurely
+      - Jwt__Issuer=https://id.nickchapsas.com
+      - Jwt__Audience=https://movies.nickchapsas.com
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - backend
+    volumes:
+      - ./logs:/app/logs       # optional: capture logs on host
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: movies_db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_strong!Passw0rd   # use secrets in production
+    ports:
+      - "1433:1433"
+    volumes:
+      - movies_db_data:/var/opt/mssql
+    restart: unless-stopped
+    networks:
+      - backend
+
+volumes:
+  movies_db_data:
+
+networks:
+  backend:
+    driver: bridge
