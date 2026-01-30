@@ -1,0 +1,16 @@
+name: One Click Deploy (Local)
+
+on:
+  push:
+    branches: [ "main" ]   # 👈 THIS is the trigger
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Get Code
+      uses: actions/checkout@v4
+
+    - name: Build Docker Image
+      run: docker build -t movies.api -f Movies.Api/Dockerfile .
