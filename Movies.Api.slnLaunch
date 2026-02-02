@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "Run Api and Consumer",
+    "Projects": [
+      {
+        "Path": "Identity.Api\\Identity.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Movies.Api\\Movies.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Movies.Api.Sdk.Consumer\\Movies.Api.Sdk.Consumer.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

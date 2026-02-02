@@ -37,6 +37,7 @@ public class MoviesController : ControllerBase
         //return Ok(movieResponse);
     }
 
+    //[AllowAnonymous]
     [HttpGet(ApiEndpoints.Movies.Get)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,6 +53,7 @@ public class MoviesController : ControllerBase
         return Ok(response);
     }
 
+    //[AllowAnonymous]
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken token)
