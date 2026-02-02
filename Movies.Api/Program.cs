@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Movies.Api.Mapping;
 using Movies.Application;
+using Movies.Application.Database;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,7 +15,7 @@ namespace Movies.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -98,37 +99,37 @@ namespace Movies.Api
             var app = builder.Build();
 
             // --- Database initialization: run migrations and optional SQL script ---
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                try
-                {
-                    var context = services.GetRequiredService<Movies.Application.Database.MovieDbContext>();
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var services = scope.ServiceProvider;
+            //    var logger = services.GetRequiredService<ILogger<Program>>();
+            //    try
+            //    {
+            //        var context = services.GetRequiredService<Movies.Application.Database.MovieDbContext>();
 
-                    // Apply EF Core migrations (recommended). This is idempotent.
-                    //context.Database.Migrate();
-                    context.Database.EnsureCreated();
+            //        // Apply EF Core migrations (recommended). This is idempotent.
+            //        //context.Database.Migrate();
+            //        context.Database.EnsureCreated();
 
-                    // Execute script if present in content root /Scripts/init.sql
-                    var scriptPath = Path.Combine(app.Environment.ContentRootPath, "Scripts", "init.sql");
-                    if (File.Exists(scriptPath))
-                    {
-                        ExecuteSqlScript(context, scriptPath, logger);
-                        logger.LogInformation("Executed DB init script: {path}", scriptPath);
-                    }
-                    else
-                    {
-                        logger.LogInformation("DB init script not found at {path}", scriptPath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "An error occurred while initializing the database.");
-                    // For safety fail fast in early dev; in production you might choose to continue or signal health checks.
-                    throw;
-                }
-            }
+            //        // Execute script if present in content root /Scripts/init.sql
+            //        var scriptPath = Path.Combine(app.Environment.ContentRootPath, "Scripts", "init.sql");
+            //        if (File.Exists(scriptPath))
+            //        {
+            //            ExecuteSqlScript(context, scriptPath, logger);
+            //            logger.LogInformation("Executed DB init script: {path}", scriptPath);
+            //        }
+            //        else
+            //        {
+            //            logger.LogInformation("DB init script not found at {path}", scriptPath);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        logger.LogError(ex, "An error occurred while initializing the database.");
+            //        // For safety fail fast in early dev; in production you might choose to continue or signal health checks.
+            //        throw;
+            //    }
+            //}
             // ------------------------------------------------------------------
 
 
@@ -149,29 +150,32 @@ namespace Movies.Api
 
             app.MapControllers();
 
+            var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+            await dbInitializer.InitializeAsync();
+
             app.Run();
         }
 
         // Local helper: split on GO (case-insensitive) and execute batches
-        static void ExecuteSqlScript(Movies.Application.Database.MovieDbContext db, string path, ILogger logger)
-        {
-            var sql = File.ReadAllText(path);
-            // Split by lines that contain only GO, case-insensitive
-            var batches = Regex.Split(sql, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            foreach (var batch in batches)
-            {
-                var trimmed = batch.Trim();
-                if (string.IsNullOrWhiteSpace(trimmed)) continue;
-                try
-                {
-                    db.Database.ExecuteSqlRaw(trimmed);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Failed to execute SQL batch from {path}. Batch preview: {preview}", path, trimmed.Length > 200 ? trimmed[..200] : trimmed);
-                    throw;
-                }
-            }
-        }
+        //static void ExecuteSqlScript(Movies.Application.Database.MovieDbContext db, string path, ILogger logger)
+        //{
+        //    var sql = File.ReadAllText(path);
+        //    // Split by lines that contain only GO, case-insensitive
+        //    var batches = Regex.Split(sql, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        //    foreach (var batch in batches)
+        //    {
+        //        var trimmed = batch.Trim();
+        //        if (string.IsNullOrWhiteSpace(trimmed)) continue;
+        //        try
+        //        {
+        //            db.Database.ExecuteSqlRaw(trimmed);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            logger.LogError(ex, "Failed to execute SQL batch from {path}. Batch preview: {preview}", path, trimmed.Length > 200 ? trimmed[..200] : trimmed);
+        //            throw;
+        //        }
+        //    }
+        //}
     }
 }

@@ -32,7 +32,10 @@ namespace Movies.Application
         public static IServiceCollection AddDatabase(this IServiceCollection services, string? connectionString = null)
         {
             // Factory as singleton (string-only config)
-            services.AddSingleton<IDbConnectionFactory, MssqlConnectionFactory>();
+            services.AddSingleton<IDbConnectionFactory>(_ =>
+            new MssqlConnectionFactory(connectionString));
+
+            services.AddSingleton<DbInitializer>();
 
 
             // If connectionString is null, EF will read from IConfiguration inside Program.cs
