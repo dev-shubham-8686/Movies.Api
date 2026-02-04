@@ -150,6 +150,13 @@ namespace Movies.Api
 
             app.MapControllers();
 
+            // Ensure database is created
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<MovieDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
+
             var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
             await dbInitializer.InitializeAsync();
 
