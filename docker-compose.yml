@@ -11,7 +11,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Server=movies_db;Database=MovieDb;User Id=sa;Password=Your_strong!Passw0rd;TrustServerCertificate=True;
+      - Database__ConnectionString=Server=movies_db;Database=MovieDb;User Id=sa;Password=Shubham@8686$;TrustServerCertificate=True;
       - Jwt__Key=ForTheLoveOfGodStoreAndLoadThisSecurely
       - Jwt__Issuer=https://id.nickchapsas.com
       - Jwt__Audience=https://movies.nickchapsas.com
